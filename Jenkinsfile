@@ -8,7 +8,7 @@ node {
   }
 
   stage('Build'){
-    dotnetBuild configuration: 'Release', project: 'HomeDashboard.sln', runtime: 'linux-x64', sdk: '.NET5', unstableIfWarnings: true
+    dotnetBuild configuration: 'Release', project: 'HomeDashboard.sln', sdk: '.NET5', unstableIfWarnings: true
   }
 
   withCredentials( \
@@ -18,7 +18,7 @@ node {
         usernameVariable: 'SSH_USER')]) {
 
     stage('Deploy'){
-      sh 'scp -pr -i ${SSH_KEY} ./Back/bin/Release/net5/linux-x64/* ${SSH_USER}@home-server.localnet: /opt/back-end-api-service'
+      sh 'scp -pr -i ${SSH_KEY} ./Back/bin/Release/net5/* ${SSH_USER}@home-server.localnet:/opt/back-end-api-service'
     }
 
     stage('Restart'){
