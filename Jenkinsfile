@@ -18,7 +18,7 @@ node {
         usernameVariable: 'SSH_USER')]) {
 
     stage('Deploy'){
-      sh 'scp -pr -i ${SSH_KEY} ./Back/bin/Release/net5/linux-x64/* ${SSH_USER}@home-server.localnet:/var/www/html/dashboard-api'
+      sh 'scp -pr -i ${SSH_KEY} ./Back/bin/Release/net5/linux-x64/* ${SSH_USER}@home-server.localnet: /opt/back-end-api-service'
     }
 
     stage('Restart'){
