@@ -8,7 +8,7 @@ node {
   }
 
   stage('Build'){
-    dotnetBuild configuration: 'Release', project: 'HomeServer.sln', runtime: 'linux-x64', sdk: '.NET5', unstableIfWarnings: true
+    dotnetBuild configuration: 'Release', project: 'HomeDashboard.sln', runtime: 'linux-x64', sdk: '.NET5', unstableIfWarnings: true
   }
 
   withCredentials( \
