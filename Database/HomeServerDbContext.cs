@@ -79,6 +79,22 @@ namespace DataBase {
 		} = null!;
 
 		/// <summary>
+		/// 投資商品
+		/// </summary>
+		public DbSet<InvestmentProduct> InvestmentProducts {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
+		/// 投資商品レート
+		/// </summary>
+		public DbSet<InvestmentProductRate> InvestmentProductRates {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="options">DbContextOptions</param>
@@ -101,6 +117,9 @@ namespace DataBase {
 			modelBuilder.Entity<ElectricPower>().HasKey(x => x.TimeStamp);
 			modelBuilder.Entity<Palmie>().HasKey(x => x.Id);
 			modelBuilder.Entity<Palmie>().Property(x => x.Id).ValueGeneratedOnAdd();
+			modelBuilder.Entity<InvestmentProduct>().HasKey(x => x.InvestmentProductId);
+			modelBuilder.Entity<InvestmentProduct>().Property(x => x.InvestmentProductId).ValueGeneratedOnAdd();
+			modelBuilder.Entity<InvestmentProductRate>().HasKey(x => new { x.InvestmentProductId, x.Date });
 		}
 	}
 }
