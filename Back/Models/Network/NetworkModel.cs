@@ -106,6 +106,9 @@ namespace Back.Models.Network {
 					await csv.ReadAsync();
 					csv.ReadHeader();
 					var db = this._scope.ServiceProvider.GetService<HomeServerDbContext>();
+					if (db == null) {
+						throw new Exception($"{typeof(HomeServerDbContext).FullName}取得失敗");
+					}
 					transaction = await db.Database.BeginTransactionAsync();
 					await db.Database.ExecuteSqlRawAsync($"DELETE FROM {nameof(db.MacAddressVendors)};");
 					this._logger.LogInformation("ベンダーリストDBクリア");

@@ -68,6 +68,9 @@ namespace Back.Models.Financial {
 				this._logger.LogInformation($"{from}-{to}の財務データベース更新開始");
 
 				var db = this._scope.ServiceProvider.GetService<HomeServerDbContext>();
+				if (db == null) {
+					throw new Exception($"{typeof(HomeServerDbContext).FullName}取得失敗");
+				}
 				var setting = await Utility.GetUseSetting(db);
 				var mfs = new MoneyForwardScraper(setting.MoneyForwardId, setting.MoneyForwardPassword);
 				await using var tran = await db.Database.BeginTransactionAsync();
