@@ -1,7 +1,7 @@
 using System;
 
 namespace Database.Tables {
-	public class InvestmentProductRate {
+	public class InvestmentProductAmount {
 		private InvestmentProduct? _investmentProduct;
 
 		/// <summary>
@@ -12,12 +12,34 @@ namespace Database.Tables {
 			set;
 		}
 
+		/// <summary>
+		/// 投資商品取得量ID
+		/// </summary>
+		public int InvestmentProductAmountId {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// 取得日
+		/// </summary>
 		public DateTime Date {
 			get;
 			set;
 		}
 
-		public double Value {
+		/// <summary>
+		/// 取得量
+		/// </summary>
+		public double Amount {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// 取得単価
+		/// </summary>
+		public double Price {
 			get;
 			set;
 		}

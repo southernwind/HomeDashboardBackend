@@ -104,5 +104,39 @@ namespace Back.Controllers {
 			var toDate = DateTime.Parse(to);
 			return new JsonResult(await this._financial.GetTransactionsAsync(fromDate, toDate));
 		}
+
+		/// <summary>
+		/// 投資商品情報登録
+		/// </summary>
+		[HttpPost]
+		[ActionName("post-register-investment-product")]
+		public async Task<JsonResult> PostRegisterInvestmentProduct([FromBody] RegisterInvestmentProductRequestDto dto) {
+			await this._financial.RegisterInvestmentProduct(dto);
+			return new JsonResult(new {
+				Result = true
+			});
+		}
+
+		/// <summary>
+		/// 投資商品取得量登録
+		/// </summary>
+		[HttpPost]
+		[ActionName("post-register-investment-product-amount")]
+		public async Task<JsonResult> PostRegisterInvestmentProductAmount([FromBody] RegisterInvestmentProductRequestAmountDto dto) {
+			await this._financial.RegisterInvestmentProductAmount(dto);
+			return new JsonResult(new {
+				Result = true
+			});
+		}
+
+		/// <summary>
+		/// 投資商品情報一覧取得
+		/// </summary>
+		[HttpGet]
+		[ActionName("get-investment-product-list")]
+		public async Task<JsonResult> GetInvestmentProductList() {
+			return new(await this._financial.GetInvestmentProductList());
+		}
+
 	}
 }

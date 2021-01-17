@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Back.Models.Common;
+using Back.Models.Financial.RequestDto;
+using Back.Models.Financial.ResponseDto;
 using Back.Utils;
 
 using Database.Tables;
@@ -16,6 +18,8 @@ using Microsoft.Extensions.Logging;
 
 using MoneyForwardViewer.DataBase.Tables;
 using MoneyForwardViewer.Scraper;
+
+using Reactive.Bindings;
 
 namespace Back.Models.Financial {
 	/// <summary>
@@ -175,6 +179,76 @@ namespace Back.Models.Financial {
 					.MfTransactions
 					.Where(x => x.IsCalculateTarget)
 					.Where(x => from <= x.Date && to >= x.Date)
+					.ToArrayAsync();
+		}
+
+		/// <summary>
+		/// 投資商品情報登録
+		/// </summary>
+		/// <param name="dto">DTO</param>
+		public async Task RegisterInvestmentProduct(RegisterInvestmentProductRequestDto dto) {
+			await this._db.InvestmentProducts.AddAsync(new InvestmentProduct {
+				Name = dto.Name,
+				Key = dto.Key,
+				Type = dto.Type,
+				Enable = true
+			});
+			await this._db.SaveChangesAsync();
+		}
+
+		/// <summary>
+		/// 投資商品取得量登録
+		/// </summary>
+		/// <param name="dto">DTO</param>
+		public async Task RegisterInvestmentProductAmount(RegisterInvestmentProductRequestAmountDto dto) {
+			var date = DateTime.Parse(dto.Date);
+			await using var transaction = await this._db.Database.BeginTransactionAsync();
+			var record = await this._db.InvestmentProductAmounts
+				.FirstOrDefaultAsync(x =>
+				x.InvestmentProductId == dto.InvestmentProductId && x.InvestmentProductAmountId == dto.InvestmentProductAmountId);
+			if (record == null) {
+				var max = this._db
+					.InvestmentProductAmounts
+					.Where(x => x.InvestmentProductId == dto.InvestmentProductId)
+					.Max(x => x.InvestmentProductAmountId);
+				await this._db.InvestmentProductAmounts.AddAsync(new InvestmentProductAmount {
+					InvestmentProductId = dto.InvestmentProductId,
+					InvestmentProductAmountId = max + 1,
+					Date = date,
+					Amount = dto.Amount,
+					Price = dto.Price
+				});
+			} else {
+				record.Date = date;
+				record.Amount = dto.Amount;
+				record.Price = dto.Price;
+				this._db.InvestmentProductAmounts.Update(record);
+			}
+
+			await this._db.SaveChangesAsync();
+			await transaction.CommitAsync();
+		}
+
+		/// <summary>
+		/// 投資商品情報一覧取得
+		/// </summary>
+		/// <returns>投資商品情報リスト</returns>
+		public async Task<GetInvestmentProductListResponseDto[]> GetInvestmentProductList() {
+			return await
+				this._db
+					.InvestmentProducts
+					.Include(x => x.InvestmentProductRates)
+					.Include(x => x.InvestmentProductAmounts)
+					.Select(x => new GetInvestmentProductListResponseDto {
+						InvestmentProductId = x.InvestmentProductId,
+						Name = x.Name,
+						Key = x.Key,
+						Type = x.Type,
+						Enable = x.Enable,
+						Amount = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
+						AverageRate = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
+						LatestRate = x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value
+					})
 					.ToArrayAsync();
 		}
 	}

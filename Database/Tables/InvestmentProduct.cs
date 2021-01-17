@@ -1,5 +1,11 @@
+using System;
+using System.Collections.Generic;
+
 namespace Database.Tables {
 	public class InvestmentProduct {
+		private ICollection<InvestmentProductAmount>? _investmentProductAmounts;
+		private ICollection<InvestmentProductRate>? _investmentProductRates;
+
 		/// <summary>
 		/// 投資商品ID
 		/// </summary>
@@ -7,6 +13,15 @@ namespace Database.Tables {
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// 投資商品名
+		/// </summary>
+		public string Name {
+			get;
+			set;
+		} = null!;
+
 
 		/// <summary>
 		/// データ取得タイプ
@@ -30,6 +45,24 @@ namespace Database.Tables {
 		public bool Enable {
 			get;
 			set;
+		}
+
+		public virtual ICollection<InvestmentProductAmount> InvestmentProductAmounts {
+			get {
+				return this._investmentProductAmounts ?? throw new InvalidOperationException();
+			}
+			set {
+				this._investmentProductAmounts = value;
+			}
+		}
+
+		public virtual ICollection<InvestmentProductRate> InvestmentProductRates {
+			get {
+				return this._investmentProductRates ?? throw new InvalidOperationException();
+			}
+			set {
+				this._investmentProductRates = value;
+			}
 		}
 	}
 }

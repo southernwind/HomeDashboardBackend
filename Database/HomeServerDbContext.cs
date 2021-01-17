@@ -95,6 +95,14 @@ namespace DataBase {
 		} = null!;
 
 		/// <summary>
+		/// 取得投資商品
+		/// </summary>
+		public DbSet<InvestmentProductAmount> InvestmentProductAmounts {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="options">DbContextOptions</param>
@@ -120,6 +128,18 @@ namespace DataBase {
 			modelBuilder.Entity<InvestmentProduct>().HasKey(x => x.InvestmentProductId);
 			modelBuilder.Entity<InvestmentProduct>().Property(x => x.InvestmentProductId).ValueGeneratedOnAdd();
 			modelBuilder.Entity<InvestmentProductRate>().HasKey(x => new { x.InvestmentProductId, x.Date });
+			modelBuilder.Entity<InvestmentProductAmount>().HasKey(x => new { x.InvestmentProductId, x.InvestmentProductAmountId });
+
+			modelBuilder.Entity<InvestmentProductAmount>()
+				.HasOne(x => x.InvestmentProduct)
+				.WithMany(x => x.InvestmentProductAmounts)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<InvestmentProductRate>()
+				.HasOne(x => x.InvestmentProduct)
+				.WithMany(x => x.InvestmentProductRates)
+				.OnDelete(DeleteBehavior.Restrict);
+
 		}
 	}
 }
