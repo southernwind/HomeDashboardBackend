@@ -138,5 +138,14 @@ namespace Back.Controllers {
 			return new(await this._financial.GetInvestmentProductList());
 		}
 
+		/// <summary>
+		/// 通貨単位一覧取得
+		/// </summary>
+		[HttpGet]
+		[ActionName("get-investment-currency-unit-list")]
+		public async Task<JsonResult> GetInvestmentCurrencyUnitList() {
+			return new(await this._financial.GetInvestmentCurrencyUnitList());
+		}
+
 	}
 }

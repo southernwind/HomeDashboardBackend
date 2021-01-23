@@ -34,6 +34,14 @@ namespace Back.Models.Financial.ResponseDto {
 		} = null!;
 
 		/// <summary>
+		/// 通貨ID
+		/// </summary>
+		public int CurrencyUnitId {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// 有効
 		/// </summary>
 		public bool Enable {

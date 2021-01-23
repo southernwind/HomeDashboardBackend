@@ -191,6 +191,7 @@ namespace Back.Models.Financial {
 				Name = dto.Name,
 				Key = dto.Key,
 				Type = dto.Type,
+				InvestmentCurrencyUnitId = dto.CurrencyUnitId,
 				Enable = true
 			});
 			await this._db.SaveChangesAsync();
@@ -210,7 +211,7 @@ namespace Back.Models.Financial {
 				var max = this._db
 					.InvestmentProductAmounts
 					.Where(x => x.InvestmentProductId == dto.InvestmentProductId)
-					.Max(x => x.InvestmentProductAmountId);
+					.Max(x => (int?)x.InvestmentProductAmountId) ?? 0;
 				await this._db.InvestmentProductAmounts.AddAsync(new InvestmentProductAmount {
 					InvestmentProductId = dto.InvestmentProductId,
 					InvestmentProductAmountId = max + 1,
@@ -234,7 +235,16 @@ namespace Back.Models.Financial {
 		/// </summary>
 		/// <returns>投資商品情報リスト</returns>
 		public async Task<GetInvestmentProductListResponseDto[]> GetInvestmentProductList() {
-			return await
+			var rates =
+				await this._db
+					.InvestmentCurrencyUnits
+					.Include(x => x.InvestmentCurrencyRates)
+					.Select(x => new {
+						id = x.Id,
+						rate = x.InvestmentCurrencyRates.OrderByDescending(r => r.Date).First().Value
+					})
+					.ToArrayAsync();
+			return (await
 				this._db
 					.InvestmentProducts
 					.Include(x => x.InvestmentProductRates)
@@ -244,12 +254,25 @@ namespace Back.Models.Financial {
 						Name = x.Name,
 						Key = x.Key,
 						Type = x.Type,
+						CurrencyUnitId = x.InvestmentCurrencyUnitId,
 						Enable = x.Enable,
 						Amount = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
 						AverageRate = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
 						LatestRate = x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value
 					})
-					.ToArrayAsync();
+					.ToArrayAsync()
+					).OrderByDescending(x => x.Amount * x.LatestRate * rates.First(r => r.id == x.CurrencyUnitId).rate)
+					.ToArray();
+		}
+
+		public async Task<GetInvestmentCurrencyUnitListResponseDto[]> GetInvestmentCurrencyUnitList() {
+			return await this._db.InvestmentCurrencyUnits.Include(x => x.InvestmentCurrencyRates).Select(x => new GetInvestmentCurrencyUnitListResponseDto {
+				Id = x.Id,
+				Name = x.Name,
+				Unit = x.Unit,
+				NumberOfDecimalPoint = x.NumberOfDecimalPoint,
+				LatestRate = x.InvestmentCurrencyRates.OrderByDescending(r => r.Date).First().Value
+			}).ToArrayAsync();
 		}
 	}
 }

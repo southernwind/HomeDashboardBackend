@@ -26,5 +26,14 @@ namespace Back.Models.Financial.RequestDto {
 			get;
 			set;
 		} = null!;
+
+		/// <summary>
+		/// 通貨単位ID
+		/// </summary>
+		public int CurrencyUnitId {
+			get;
+			set;
+		}
+
 	}
 }

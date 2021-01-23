@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Database.Tables {
 	public class InvestmentProduct {
+		private InvestmentCurrencyUnit? _investmentCurrencyUnit;
 		private ICollection<InvestmentProductAmount>? _investmentProductAmounts;
 		private ICollection<InvestmentProductRate>? _investmentProductRates;
 
@@ -40,11 +41,31 @@ namespace Database.Tables {
 		} = null!;
 
 		/// <summary>
+		/// 通貨単位ID
+		/// </summary>
+		public int InvestmentCurrencyUnitId {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// 有効
 		/// </summary>
 		public bool Enable {
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// 通貨単位
+		/// </summary>
+		public InvestmentCurrencyUnit InvestmentCurrencyUnit {
+			get {
+				return this._investmentCurrencyUnit ?? throw new InvalidOperationException();
+			}
+			set {
+				this._investmentCurrencyUnit = value;
+			}
 		}
 
 		public virtual ICollection<InvestmentProductAmount> InvestmentProductAmounts {
