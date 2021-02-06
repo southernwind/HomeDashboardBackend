@@ -26,6 +26,14 @@ namespace Back.Models.Financial.ResponseDto {
 		} = null!;
 
 		/// <summary>
+		/// データ取得タイプ
+		/// </summary>
+		public string Category {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
 		/// データ取得に必要なキー情報
 		/// </summary>
 		public string Key {

@@ -23,6 +23,13 @@ namespace Database.Tables {
 			set;
 		} = null!;
 
+		/// <summary>
+		/// 投資商品カテゴリー
+		/// </summary>
+		public string Category {
+			get;
+			set;
+		} = null!;
 
 		/// <summary>
 		/// データ取得タイプ

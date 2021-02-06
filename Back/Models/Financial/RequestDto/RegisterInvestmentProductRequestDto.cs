@@ -20,6 +20,14 @@ namespace Back.Models.Financial.RequestDto {
 		} = null!;
 
 		/// <summary>
+		/// 投資商品カテゴリー
+		/// </summary>
+		public string Category {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
 		/// 取得のためのキー情報
 		/// </summary>
 		public string Key {

@@ -155,5 +155,14 @@ namespace Back.Controllers {
 			return new(await this._financial.GetInvestmentProductTypeList());
 		}
 
+		/// <summary>
+		/// 投資商品カテゴリー一覧取得
+		/// </summary>
+		[HttpGet]
+		[ActionName("get-investment-product-category-list")]
+		public async Task<JsonResult> GetInvestmentProductCategoryList() {
+			return new(await this._financial.GetInvestmentProductCategoryList());
+		}
+
 	}
 }

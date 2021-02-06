@@ -191,6 +191,7 @@ namespace Back.Models.Financial {
 				Name = dto.Name,
 				Key = dto.Key,
 				Type = dto.Type,
+				Category = dto.Category,
 				InvestmentCurrencyUnitId = dto.CurrencyUnitId,
 				Enable = true
 			});
@@ -254,6 +255,7 @@ namespace Back.Models.Financial {
 						Name = x.Name,
 						Key = x.Key,
 						Type = x.Type,
+						Category = x.Category,
 						CurrencyUnitId = x.InvestmentCurrencyUnitId,
 						Enable = x.Enable,
 						Amount = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
@@ -277,6 +279,9 @@ namespace Back.Models.Financial {
 
 		public async Task<string[]> GetInvestmentProductTypeList() {
 			return await this._db.InvestmentProducts.Select(x => x.Type).Distinct().ToArrayAsync();
+		}
+		public async Task<string[]> GetInvestmentProductCategoryList() {
+			return await this._db.InvestmentProducts.Select(x => x.Category).Distinct().ToArrayAsync();
 		}
 	}
 }
