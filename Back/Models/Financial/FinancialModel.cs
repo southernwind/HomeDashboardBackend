@@ -274,5 +274,9 @@ namespace Back.Models.Financial {
 				LatestRate = x.InvestmentCurrencyRates.OrderByDescending(r => r.Date).First().Value
 			}).ToArrayAsync();
 		}
+
+		public async Task<string[]> GetInvestmentProductTypeList() {
+			return await this._db.InvestmentProducts.Select(x => x.Type).Distinct().ToArrayAsync();
+		}
 	}
 }

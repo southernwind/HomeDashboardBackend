@@ -146,6 +146,14 @@ namespace Back.Controllers {
 		public async Task<JsonResult> GetInvestmentCurrencyUnitList() {
 			return new(await this._financial.GetInvestmentCurrencyUnitList());
 		}
+		/// <summary>
+		/// 投資商品タイプ一覧取得
+		/// </summary>
+		[HttpGet]
+		[ActionName("get-investment-product-type-list")]
+		public async Task<JsonResult> GetInvestmentProductTypeList() {
+			return new(await this._financial.GetInvestmentProductTypeList());
+		}
 
 	}
 }
