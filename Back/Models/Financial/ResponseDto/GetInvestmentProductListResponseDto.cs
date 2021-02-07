@@ -26,7 +26,7 @@ namespace Back.Models.Financial.ResponseDto {
 		} = null!;
 
 		/// <summary>
-		/// データ取得タイプ
+		/// カテゴリ
 		/// </summary>
 		public string Category {
 			get;

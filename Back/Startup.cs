@@ -61,7 +61,8 @@ namespace Back {
 			services.AddMvc();
 			services.AddSignalR();
 			services.AddDbContext<HomeServerDbContext>(optionsBuilder => {
-				optionsBuilder.UseMySql(this.Configuration.GetConnectionString("Database"));
+				var connectionString = this.Configuration.GetConnectionString("Database");
+				optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 			});
 			services.AddLogging(builder => {
 				builder.AddConfiguration(this.Configuration.GetSection("Logging"))

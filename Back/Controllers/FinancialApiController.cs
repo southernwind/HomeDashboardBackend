@@ -164,5 +164,19 @@ namespace Back.Controllers {
 			return new(await this._financial.GetInvestmentProductCategoryList());
 		}
 
+		/// <summary>
+		/// 投資資産推移取得
+		/// </summary>
+		/// <param name="from">開始日</param>
+		/// <param name="to">終了日</param>
+		/// <returns>投資データ</returns>
+		[HttpGet]
+		[ActionName("get-investment-assets")]
+		public async Task<JsonResult> GetInvestmentAssetsAsync(string from, string to) {
+			var fromDate = DateTime.Parse(from);
+			var toDate = DateTime.Parse(to);
+			return new JsonResult(await this._financial.GetInvestmentAssetsAsync(fromDate, toDate));
+		}
+
 	}
 }
