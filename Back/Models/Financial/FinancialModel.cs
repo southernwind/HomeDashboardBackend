@@ -259,7 +259,7 @@ namespace Back.Models.Financial {
 						CurrencyUnitId = x.InvestmentCurrencyUnitId,
 						Enable = x.Enable,
 						Amount = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
-						AverageRate = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
+						AverageRate = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount) == 0 ? 0 : x.InvestmentProductAmounts.Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
 						LatestRate = x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value
 					})
 					.ToArrayAsync()
