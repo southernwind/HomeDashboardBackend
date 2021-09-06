@@ -231,6 +231,23 @@ namespace Back.Models.Financial {
 			await transaction.CommitAsync();
 		}
 
+		public async Task<GetInvestmentProductAmountDto[]> GetInvestmentProductAmountList(int investmentProductId) {
+			return await
+				this
+					._db
+					.InvestmentProductAmounts
+					.Where(x => x.InvestmentProductId == investmentProductId)
+					.Select(x => new GetInvestmentProductAmountDto {
+						InvestmentProductId = x.InvestmentProductId,
+						InvestmentProductAmountId = x.InvestmentProductAmountId,
+						Date = x.Date,
+						Amount = x.Amount,
+						Price = x.Price
+					})
+					.OrderByDescending(x => x.Date)
+					.ToArrayAsync();
+		}
+
 		/// <summary>
 		/// 投資商品情報一覧取得
 		/// </summary>

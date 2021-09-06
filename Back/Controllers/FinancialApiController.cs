@@ -130,6 +130,15 @@ namespace Back.Controllers {
 		}
 
 		/// <summary>
+		/// 投資商品取得量一覧取得
+		/// </summary>
+		[HttpGet]
+		[ActionName("get-investment-product-amount-list")]
+		public async Task<JsonResult> GetInvestmentProductAmountList(int investmentProductId) {
+			return new(await this._financial.GetInvestmentProductAmountList(investmentProductId));
+		}
+
+		/// <summary>
 		/// 投資商品情報一覧取得
 		/// </summary>
 		[HttpGet]
