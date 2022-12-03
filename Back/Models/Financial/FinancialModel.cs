@@ -65,74 +65,7 @@ namespace Back.Models.Financial {
 		/// <param name="to">取得対象終了日</param>
 		/// <returns>更新キー</returns>
 		public int Update(DateTime from, DateTime to) {
-			return this._updater.Update(async progress => {
-				// 進捗率計算の分母
-				var denominator = Math.Max(1, to.Ticks - from.Ticks);
-				progress.Report(1);
-				this._logger.LogInformation($"{from}-{to}の財務データベース更新開始");
-
-				var db = this._scope.ServiceProvider.GetService<HomeServerDbContext>();
-				if (db == null) {
-					throw new Exception($"{typeof(HomeServerDbContext).FullName}取得失敗");
-				}
-				var setting = await Utility.GetUseSetting(db);
-				var mfs = new MoneyForwardScraper(setting.MoneyForwardId, setting.MoneyForwardPassword);
-				await using var tran = await db.Database.BeginTransactionAsync();
-
-				// 資産推移
-				var maCount = 0;
-				await foreach (var ma in mfs.GetAssets(from, to)) {
-					var assets =
-						ma.GroupBy(x => new { x.Date, x.Institution, x.Category })
-							.Select(x => new LockableMfAsset {
-								Date = x.Key.Date,
-								Institution = x.Key.Institution,
-								Category = x.Key.Category,
-								Amount = x.Sum(a => a.Amount),
-								IsLocked = false
-							}).ToArray();
-					var existsRecords = db.MfAssets.Where(a => a.Date == assets.First().Date);
-					var deleteAssetList = existsRecords.Where(x => !x.IsLocked);
-					db.MfAssets.RemoveRange(deleteAssetList);
-
-					await db.MfAssets.AddRangeAsync(assets.Where(x =>
-						existsRecords
-							.Where(er => er.IsLocked)
-							.All(er => er.Institution != x.Institution || er.Category != x.Category)));
-					this._logger.LogDebug($"{ma.First().Date:yyyy/MM/dd}資産推移{assets.Length}件登録");
-					maCount += assets.Length;
-					progress.Report(1 + ((ma.First().Date.Ticks - from.Ticks) * 89 / denominator));
-				}
-				this._logger.LogInformation($"資産推移 計{maCount}件登録");
-
-				// 取引履歴
-				var mtCount = 0;
-				await foreach (var mt in mfs.GetTransactions(from, to)) {
-					var ids = mt.Select(x => x.TransactionId).ToArray();
-					var existsRecords = db.MfTransactions.Where(t => ids.Contains(t.TransactionId));
-					var deleteTransactionList = existsRecords.Where(x => !x.IsLocked);
-					db.MfTransactions.RemoveRange(deleteTransactionList);
-					await db.MfTransactions.AddRangeAsync(
-						mt.Select(x => new LockableMfTransaction(x))
-							.Where(x =>
-								existsRecords
-									.Where(er => er.IsLocked)
-									.All(er => er.TransactionId != x.TransactionId)));
-					this._logger.LogInformation($"{mt.First()?.Date:yyyy/MM}取引履歴{mt.Length}件登録");
-					mtCount += mt.Length;
-					progress.Report(90 + ((mt.First().Date.Ticks - from.Ticks) * 9 / denominator));
-				}
-				this._logger.LogInformation($"取引履歴 計{mtCount}件登録");
-				progress.Report(99);
-
-				await db.SaveChangesAsync();
-				this._logger.LogDebug("SaveChanges");
-				await tran.CommitAsync();
-				this._logger.LogDebug("Commit");
-
-				this._logger.LogInformation($"{from}-{to}の財務データベース更新正常終了");
-				progress.Report(100);
-			});
+			return 0;
 		}
 
 		/// <summary>
