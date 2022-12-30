@@ -12,6 +12,8 @@ using Database.Tables;
 
 using DataBase;
 
+using HtmlAgilityPack;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -152,7 +154,28 @@ namespace Back.Models.Financial {
 		/// <param name="to">取得対象終了日</param>
 		/// <returns>資産推移データ</returns>
 		public async Task<MfAsset[]> GetAssetsAsync(DateTime from, DateTime to) {
-			return await this._db.MfAssets.Where(x => from <= x.Date && to >= x.Date).ToArrayAsync();
+			var assets = await this._db.MfAssets.Where(x => from <= x.Date && to >= x.Date).ToArrayAsync();
+			var ia = await this.GetInvestmentAssetsAsync(from, to);
+			var investmentAssets = ia
+				.InvestmentAssetProducts
+				.SelectMany(x =>
+					x.DailyRates.Select(dr => new { DailyRate = dr, x.CurrencyUnitId })
+				).Select(x => {
+					var currencyRate = x.CurrencyUnitId != 1 ? ia.CurrencyRates.Single(c => c.Id == x.CurrencyUnitId && c.Date == x.DailyRate.Date).LatestRate : 1;
+					return new {
+						Amount = (int)(x.DailyRate.AverageRate * x.DailyRate.Amount * currencyRate),
+						x.DailyRate.Date,
+					};
+				})
+				.GroupBy(x => x.Date)
+				.Select(x => new MfAsset() {
+					Date = x.Key,
+					Amount = x.Sum(x => x.Amount),
+					Category = "証券",
+					Institution = "証券"
+				});
+
+			return assets.Concat(investmentAssets).OrderBy(x => x.Date).ThenBy(x => x.Category).ThenBy(x => x.Institution).ToArray();
 		}
 
 
@@ -163,8 +186,9 @@ namespace Back.Models.Financial {
 		/// <param name="to">取得対象終了日</param>
 		/// <returns>資産推移データ</returns>
 		public async Task<MfAsset[]> GetLatestAssetAsync(DateTime from, DateTime to) {
-			var max = await this._db.MfAssets.Where(x => from <= x.Date && to >= x.Date).MaxAsync(x => x.Date);
-			return await this._db.MfAssets.Where(x => x.Date == max).ToArrayAsync();
+			var assets = await this.GetAssetsAsync(from, to);
+			var max = assets.Max(x => x.Date);
+			return assets.Where(x => x.Date == max).ToArray();
 		}
 
 		/// <summary>
