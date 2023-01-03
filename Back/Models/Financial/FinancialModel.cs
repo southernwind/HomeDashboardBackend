@@ -370,7 +370,7 @@ namespace Back.Models.Financial {
 									.Sum(ipa => ipa.Amount * ipa.Price);
 							return new DailyRate {
 								Date = date,
-								Rate = product.InvestmentProductRates.Where(r => r.Date <= date).MaxBy(r => r.Date).First()
+								Rate = product.InvestmentProductRates.Where(r => r.Date <= date).MaxByWithTies(r => r.Date).First()
 									.Value,
 								Amount = amount,
 								AverageRate = averageRate / amount
@@ -385,7 +385,7 @@ namespace Back.Models.Financial {
 							var (date, currencyId) = g;
 							var currency = currencyUnits
 								.Where(x => x.InvestmentCurrencyUnitId == currencyId && x.Date <= date)
-								.MaxBy(x => x.Date).FirstOrDefault();
+								.MaxByWithTies(x => x.Date).FirstOrDefault();
 							return new CurrencyUnit {
 								Id = currency?.InvestmentCurrencyUnitId ?? -1,
 								Date = date,
