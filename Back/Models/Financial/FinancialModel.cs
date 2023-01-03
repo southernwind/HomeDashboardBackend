@@ -385,13 +385,15 @@ namespace Back.Models.Financial {
 							var (date, currencyId) = g;
 							var currency = currencyUnits
 								.Where(x => x.InvestmentCurrencyUnitId == currencyId && x.Date <= date)
-								.MaxBy(x => x.Date).First();
+								.MaxBy(x => x.Date).FirstOrDefault();
 							return new CurrencyUnit {
-								Id = currency.InvestmentCurrencyUnitId,
+								Id = currency?.InvestmentCurrencyUnitId ?? -1,
 								Date = date,
-								LatestRate = currency.Value
+								LatestRate = currency?.Value ?? -1
 							};
-						}).ToArray()
+						})
+						.Where( x=> x.Id != -1)
+						.ToArray()
 			};
 
 			return result;
