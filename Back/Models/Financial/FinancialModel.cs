@@ -163,7 +163,7 @@ namespace Back.Models.Financial {
 				).Select(x => {
 					var currencyRate = x.CurrencyUnitId != 1 ? ia.CurrencyRates.Single(c => c.Id == x.CurrencyUnitId && c.Date == x.DailyRate.Date).LatestRate : 1;
 					return new {
-						Amount = (int)(x.DailyRate.AverageRate * x.DailyRate.Amount * currencyRate),
+						Amount = (int)(x.DailyRate.Rate * x.DailyRate.Amount * currencyRate),
 						x.DailyRate.Date,
 					};
 				})
