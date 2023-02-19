@@ -203,6 +203,7 @@ namespace Back.Models.Financial {
 					.MfTransactions
 					.Where(x => x.IsCalculateTarget)
 					.Where(x => from <= x.Date && to >= x.Date)
+					.OrderBy(x => x.Date)
 					.ToArrayAsync();
 		}
 
