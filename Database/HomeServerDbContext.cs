@@ -119,6 +119,14 @@ namespace DataBase {
 		} = null!;
 
 		/// <summary>
+		/// 投資通貨レート
+		/// </summary>
+		public DbSet<TradingAccount> TradingAccounts {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="options">DbContextOptions</param>
@@ -148,9 +156,16 @@ namespace DataBase {
 			modelBuilder.Entity<InvestmentCurrencyUnit>().HasKey(x => x.Id);
 			modelBuilder.Entity<InvestmentCurrencyUnit>().Property(x => x.Id).ValueGeneratedOnAdd();
 			modelBuilder.Entity<InvestmentCurrencyRate>().HasKey(x => new { x.InvestmentCurrencyUnitId, x.Date });
+			modelBuilder.Entity<TradingAccount>().Property(x => x.TradingAccountId).ValueGeneratedOnAdd();
+			modelBuilder.Entity<TradingAccount>().HasKey(x => x.TradingAccountId);
 
 			modelBuilder.Entity<InvestmentProductAmount>()
 				.HasOne(x => x.InvestmentProduct)
+				.WithMany(x => x.InvestmentProductAmounts)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<InvestmentProductAmount>()
+				.HasOne(x => x.TradingAccount)
 				.WithMany(x => x.InvestmentProductAmounts)
 				.OnDelete(DeleteBehavior.Restrict);
 

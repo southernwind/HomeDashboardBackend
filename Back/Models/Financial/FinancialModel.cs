@@ -58,6 +58,7 @@ namespace Back.Models.Financial {
 			this._scope = serviceScopeFactory.CreateScope();
 			this._logger = logger;
 			this._updater = updater;
+			db.Database.EnsureCreated();
 		}
 
 		/// <summary>
@@ -73,10 +74,7 @@ namespace Back.Models.Financial {
 				progress.Report(1);
 				this._logger.LogInformation($"{from}-{to}の財務データベース更新開始");
 
-				var db = this._scope.ServiceProvider.GetService<HomeServerDbContext>();
-				if (db == null) {
-					throw new Exception($"{typeof(HomeServerDbContext).FullName}取得失敗");
-				}
+				var db = this._scope.ServiceProvider.GetService<HomeServerDbContext>() ?? throw new Exception($"{typeof(HomeServerDbContext).FullName}取得失敗");
 				var setting = await Utility.GetUseSetting(db);
 				var mfs = new MoneyForwardScraper(setting.MoneyForwardId, setting.MoneyForwardPassword);
 				await using var tran = await db.Database.BeginTransactionAsync();
@@ -241,6 +239,7 @@ namespace Back.Models.Financial {
 				await this._db.InvestmentProductAmounts.AddAsync(new InvestmentProductAmount {
 					InvestmentProductId = dto.InvestmentProductId,
 					InvestmentProductAmountId = max + 1,
+					TradingAccountId = dto.TradingAccountId,
 					Date = date,
 					Amount = dto.Amount,
 					Price = dto.Price
@@ -256,18 +255,26 @@ namespace Back.Models.Financial {
 			await transaction.CommitAsync();
 		}
 
+		/// <summary>
+		/// 投資履歴取得
+		/// </summary>
+		/// <param name="investmentProductId"></param>
+		/// <returns></returns>
 		public async Task<GetInvestmentProductAmountDto[]> GetInvestmentProductAmountList(int investmentProductId) {
 			return await
 				this
 					._db
 					.InvestmentProductAmounts
+					.Include(x => x.TradingAccount)
 					.Where(x => x.InvestmentProductId == investmentProductId)
 					.Select(x => new GetInvestmentProductAmountDto {
 						InvestmentProductId = x.InvestmentProductId,
 						InvestmentProductAmountId = x.InvestmentProductAmountId,
 						Date = x.Date,
 						Amount = x.Amount,
-						Price = x.Price
+						Price = x.Price,
+						TradingAccountName = x.TradingAccount.Name,
+						TradingAccountLogo = x.TradingAccount.Logo
 					})
 					.OrderByDescending(x => x.Date)
 					.ToArrayAsync();
@@ -317,6 +324,25 @@ namespace Back.Models.Financial {
 				NumberOfDecimalPoint = x.NumberOfDecimalPoint,
 				LatestRate = x.InvestmentCurrencyRates.OrderByDescending(r => r.Date).First().Value
 			}).ToArrayAsync();
+		}
+
+		/// <summary>
+		/// 証券口座リスト取得
+		/// </summary>
+		/// <param name="investmentProductId"></param>
+		/// <returns></returns>
+		public async Task<GetTradingAccountListDto[]> GetTradingAccountListAsync() {
+			return await
+				this
+					._db
+					.TradingAccounts
+					.OrderBy(x => x.TradingAccountId)
+					.Select(x => new GetTradingAccountListDto {
+						TradingAccountId = x.TradingAccountId,
+						Name = x.Name,
+						Logo = x.Logo
+					})
+					.ToArrayAsync();
 		}
 
 		public async Task<string[]> GetInvestmentProductTypeList() {

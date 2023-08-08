@@ -41,5 +41,21 @@ namespace Back.Models.Financial.ResponseDto {
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// 証券口座名
+		/// </summary>
+		public string TradingAccountName {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
+		/// 証券口座ロゴ
+		/// </summary>
+		public string TradingAccountLogo {
+			get;
+			set;
+		} = null!;
 	}
 }

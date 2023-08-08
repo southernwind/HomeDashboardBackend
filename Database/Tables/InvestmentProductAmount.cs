@@ -3,6 +3,7 @@ using System;
 namespace Database.Tables {
 	public class InvestmentProductAmount {
 		private InvestmentProduct? _investmentProduct;
+		private TradingAccount? _tradingAccount;
 
 		/// <summary>
 		/// 投資商品ID
@@ -16,6 +17,14 @@ namespace Database.Tables {
 		/// 投資商品取得量ID
 		/// </summary>
 		public int InvestmentProductAmountId {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// 口座ID
+		/// </summary>
+		public int TradingAccountId {
 			get;
 			set;
 		}
@@ -50,6 +59,15 @@ namespace Database.Tables {
 			}
 			set {
 				this._investmentProduct = value;
+			}
+		}
+
+		public TradingAccount TradingAccount {
+			get {
+				return this._tradingAccount ?? throw new InvalidOperationException();
+			}
+			set {
+				this._tradingAccount = value;
 			}
 		}
 	}

@@ -20,6 +20,14 @@ namespace Back.Models.Financial.RequestDto {
 		}
 
 		/// <summary>
+		/// 口座ID
+		/// </summary>
+		public int TradingAccountId {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// 取得日
 		/// </summary>
 		public string Date {
