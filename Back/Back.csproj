@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6</TargetFramework>
+    <TargetFramework>net7</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,12 +9,12 @@
     <PackageReference Include="Dapper" />
     <PackageReference Include="HtmlAgilityPack" />
     <PackageReference Include="HtmlAgilityPack.CssSelectors.NetCore" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces"/>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
     <PackageReference Include="ReactiveProperty" />
     <PackageReference Include="System.IO.Ports" />
     <PackageReference Include="System.Reactive" />
-    <PackageReference Include="System.Interactive"/>
+    <PackageReference Include="System.Interactive" />
     <PackageReference Include="Slack.Webhooks" />
   </ItemGroup>
   <ItemGroup>

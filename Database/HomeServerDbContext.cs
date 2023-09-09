@@ -127,6 +127,22 @@ namespace DataBase {
 		} = null!;
 
 		/// <summary>
+		/// ヘルスチェック対象
+		/// </summary>
+		public DbSet<HealthCheckTarget> HealthCheckTargets {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
+		/// ヘルスチェック結果
+		/// </summary>
+		public DbSet<HealthCheckResult> HealthCheckResults{
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="options">DbContextOptions</param>
@@ -158,6 +174,10 @@ namespace DataBase {
 			modelBuilder.Entity<InvestmentCurrencyRate>().HasKey(x => new { x.InvestmentCurrencyUnitId, x.Date });
 			modelBuilder.Entity<TradingAccount>().Property(x => x.TradingAccountId).ValueGeneratedOnAdd();
 			modelBuilder.Entity<TradingAccount>().HasKey(x => x.TradingAccountId);
+			modelBuilder.Entity<HealthCheckTarget>().HasKey(x => x.HealthCheckTargetId);
+			modelBuilder.Entity<HealthCheckTarget>().Property(x => x.HealthCheckTargetId).ValueGeneratedOnAdd();
+			modelBuilder.Entity<HealthCheckResult>().HasKey(x => x.HealthCheckResultId);
+			modelBuilder.Entity<HealthCheckResult>().Property(x => x.HealthCheckResultId).ValueGeneratedOnAdd();
 
 			modelBuilder.Entity<InvestmentProductAmount>()
 				.HasOne(x => x.InvestmentProduct)
@@ -182,6 +202,11 @@ namespace DataBase {
 			modelBuilder.Entity<InvestmentProductRate>()
 				.HasOne(x => x.InvestmentProduct)
 				.WithMany(x => x.InvestmentProductRates)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<HealthCheckResult>()
+				.HasOne(x => x.HealthCheckTarget)
+				.WithMany(x => x.HealthCheckResults)
 				.OnDelete(DeleteBehavior.Restrict);
 
 		}
