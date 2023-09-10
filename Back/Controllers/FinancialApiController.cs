@@ -199,5 +199,16 @@ namespace Back.Controllers {
 			return new JsonResult(await this._financial.GetTradingAccountListAsync());
 		}
 
+		/// <summary>
+		/// 投資
+		/// </summary>
+		/// <param name="from">開始日</param>
+		/// <param name="to">終了日</param>
+		/// <returns>投資データ</returns>
+		[HttpGet]
+		[ActionName("get-trading-account-detail")]
+		public async Task<JsonResult> GetTradingAccountDetailAsync(int tradingAccountId) {
+			return new JsonResult(await this._financial.GetTradingAccountDetailAsync(tradingAccountId));
+		}
 	}
 }

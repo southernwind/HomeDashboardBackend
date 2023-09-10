@@ -280,6 +280,67 @@ namespace Back.Models.Financial {
 					.ToArrayAsync();
 		}
 
+
+		/// <summary>
+		/// 投資履歴取得
+		/// </summary>
+		/// <param name="tradingAccountId"></param>
+		/// <returns></returns>
+		public async Task<GetTradingAccountDetailDto> GetTradingAccountDetailAsync(int tradingAccountId) {
+			var amountList = await this._db
+					.InvestmentProductAmounts
+					.Include(x => x.InvestmentProduct)
+					.Where(x => x.TradingAccountId == tradingAccountId)
+					.Select(x => new GetTradingAccountDetailDto.TradingAccountDetailAmount {
+						InvestmentProductId = x.InvestmentProductId,
+						InvestmentProductName = x.InvestmentProduct.Name,
+						InvestmentProductAmountId = x.InvestmentProductAmountId,
+						CurrencyUnitId = x.InvestmentProduct.InvestmentCurrencyUnitId,
+						Date = x.Date,
+						Amount = x.Amount,
+						Price = x.Price,
+					})
+					.OrderByDescending(x => x.Date)
+					.ToArrayAsync();
+
+			var amountListSummary = await this._db
+					.InvestmentProducts
+					.Include(x => x.InvestmentProductRates)
+					.Include(x => x.InvestmentProductAmounts)
+					.Select(x => new GetTradingAccountDetailDto.TradingAccountDetailAmountSummary {
+						InvestmentProductId = x.InvestmentProductId,
+						Name = x.Name,
+						Key = x.Key,
+						Type = x.Type,
+						Category = x.Category,
+						CurrencyUnitId = x.InvestmentCurrencyUnitId,
+						Enable = x.Enable,
+						Amount = x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount),
+						AverageRate = x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount) == 0 ? 0 : x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount),
+						LatestRate = (double?)x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value ?? 0
+					})
+					.Where(x => x.Amount != 0)
+					.ToArrayAsync();
+			var account = await this._db.TradingAccounts.SingleAsync(x => x.TradingAccountId == tradingAccountId);
+
+			var rates =
+				await this._db
+					.InvestmentCurrencyUnits
+					.Include(x => x.InvestmentCurrencyRates)
+					.Select(x => new {
+						id = x.Id,
+						rate = x.InvestmentCurrencyRates.OrderByDescending(r => r.Date).First().Value
+					})
+					.ToArrayAsync();
+
+			return new GetTradingAccountDetailDto() {
+				TradingAccountName = account.Name,
+				TradingAccountLogo = account.Logo,
+				TradingAccountDetailAmountList = amountList,
+				TradingAccountDetailAmountSummaryList = amountListSummary.OrderByDescending(x => x.Amount * x.LatestRate * rates.First(r => r.id == x.CurrencyUnitId).rate).ToArray()
+			};
+		}
+
 		/// <summary>
 		/// 投資商品情報一覧取得
 		/// </summary>
