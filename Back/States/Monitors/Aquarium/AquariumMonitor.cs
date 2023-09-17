@@ -21,8 +21,8 @@ namespace Back.States.Monitors.Aquarium {
 		public AquariumMonitor(Store store, IHubContext<DashboardHub> hubContext, IConfiguration configuration) {
 			this._store = store;
 			this._hubContext = hubContext;
-			this._aquaWebHookUrl = configuration.GetSection("WebHookUrl").GetSection("AquariumSlack").Get<string>();
-			this._errorWebHookUrl = configuration.GetSection("WebHookUrl").GetSection("ErrorSlack").Get<string>();
+			this._aquaWebHookUrl = configuration.GetSection("WebHookUrl").GetSection("AquariumSlack").Get<string>()!;
+			this._errorWebHookUrl = configuration.GetSection("WebHookUrl").GetSection("ErrorSlack").Get<string>()!;
 			var slackClient = new SlackClient(this._aquaWebHookUrl).AddTo(this._compositeDisposable);
 			var errorSlackClient = new SlackClient(this._errorWebHookUrl).AddTo(this._compositeDisposable);
 			// 更新値通知

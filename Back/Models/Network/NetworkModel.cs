@@ -37,7 +37,7 @@ namespace Back.Models.Network {
 			this._clientFactory = clientFactory;
 			this._updater = updater;
 			this._scope = serviceScopeFactory.CreateScope();
-			this._dhcpLeasesUrl = configuration.GetSection("DhcpLeasesUrl").Get<string>();
+			this._dhcpLeasesUrl = configuration.GetSection("DhcpLeasesUrl").Get<string>()!;
 		}
 
 		public bool SendMagicPacket(string target) {
