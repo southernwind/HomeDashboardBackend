@@ -29,6 +29,7 @@ namespace Back {
 			} catch (Exception ex) {
 				var logger = services.GetRequiredService<ILogger<Program>>();
 				logger.LogError(ex, "An error occurred creating the DB.");
+				throw;
 			}
 		}
 		private static void StartMonitoring(IHost host) {
@@ -39,6 +40,7 @@ namespace Back {
 			} catch (Exception ex) {
 				var logger = services.GetRequiredService<ILogger<Program>>();
 				logger.LogError(ex, "An error occurred start Monitoring.");
+				throw;
 			}
 		}
 
