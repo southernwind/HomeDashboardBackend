@@ -473,7 +473,7 @@ namespace Back.Models.Financial {
 							var (date, currencyId) = g;
 							var currency = currencyUnits
 								.Where(x => x.InvestmentCurrencyUnitId == currencyId && x.Date <= date)
-								.MaxByWithTies(x => x.Date).FirstOrDefault();
+								.MaxBy(x => x.Date) ?? new InvestmentCurrencyRate() { Date = date, InvestmentCurrencyUnitId = currencyId, Value = 1};
 							return new CurrencyUnit {
 								Id = currency?.InvestmentCurrencyUnitId ?? -1,
 								Date = date,
