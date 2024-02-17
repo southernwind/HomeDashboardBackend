@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Database.Tables; 
 public class TradingAccount {
 	private ICollection<InvestmentProductAmount>? _investmentProductAmounts;
+	private ICollection<TradingAccountCategory>? _tradingAccountCategories;
 
 	/// <summary>
 	/// 口座ID
@@ -35,6 +36,14 @@ public class TradingAccount {
 		}
 		set {
 			this._investmentProductAmounts = value;
+		}
+	}
+	public virtual ICollection<TradingAccountCategory> TradingAccountCategories {
+		get {
+			return this._tradingAccountCategories ?? throw new InvalidOperationException();
+		}
+		set {
+			this._tradingAccountCategories = value;
 		}
 	}
 }

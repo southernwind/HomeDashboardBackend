@@ -240,6 +240,7 @@ namespace Back.Models.Financial {
 					InvestmentProductId = dto.InvestmentProductId,
 					InvestmentProductAmountId = max + 1,
 					TradingAccountId = dto.TradingAccountId,
+					TradingAccountCategoryId = dto.TradingAccountCategoryId,
 					Date = date,
 					Amount = dto.Amount,
 					Price = dto.Price
@@ -248,6 +249,8 @@ namespace Back.Models.Financial {
 				record.Date = date;
 				record.Amount = dto.Amount;
 				record.Price = dto.Price;
+				record.TradingAccountId = dto.TradingAccountId;
+				record.TradingAccountCategoryId = dto.TradingAccountCategoryId;
 				this._db.InvestmentProductAmounts.Update(record);
 			}
 
@@ -266,15 +269,17 @@ namespace Back.Models.Financial {
 					._db
 					.InvestmentProductAmounts
 					.Include(x => x.TradingAccount)
-					.Where(x => x.InvestmentProductId == investmentProductId)
+					.Join(this._db.TradingAccountCategories, x => new { x.TradingAccountId,x.TradingAccountCategoryId}, x=> new { x.TradingAccountId, x.TradingAccountCategoryId },(Amounts,x) => new { Amounts, x.TradingAccountCategoryName })
+					.Where(x => x.Amounts.InvestmentProductId == investmentProductId)
 					.Select(x => new GetInvestmentProductAmountDto {
-						InvestmentProductId = x.InvestmentProductId,
-						InvestmentProductAmountId = x.InvestmentProductAmountId,
-						Date = x.Date,
-						Amount = x.Amount,
-						Price = x.Price,
-						TradingAccountName = x.TradingAccount.Name,
-						TradingAccountLogo = x.TradingAccount.Logo
+						InvestmentProductId = x.Amounts.InvestmentProductId,
+						InvestmentProductAmountId = x.Amounts.InvestmentProductAmountId,
+						Date = x.Amounts.Date,
+						Amount = x.Amounts.Amount,
+						Price = x.Amounts.Price,
+						TradingAccountName = x.Amounts.TradingAccount.Name,
+						TradingAccountLogo = x.Amounts.TradingAccount.Logo,
+						TradingAccountCategoryName = x.TradingAccountCategoryName
 					})
 					.OrderByDescending(x => x.Date)
 					.ToArrayAsync();
@@ -282,7 +287,7 @@ namespace Back.Models.Financial {
 
 
 		/// <summary>
-		/// 投資履歴取得
+		/// 口座情報取得
 		/// </summary>
 		/// <param name="tradingAccountId"></param>
 		/// <returns></returns>
@@ -290,37 +295,64 @@ namespace Back.Models.Financial {
 			var amountList = await this._db
 					.InvestmentProductAmounts
 					.Include(x => x.InvestmentProduct)
-					.Where(x => x.TradingAccountId == tradingAccountId)
+					.Join(this._db.TradingAccountCategories, x => new { x.TradingAccountId, x.TradingAccountCategoryId }, x => new { x.TradingAccountId, x.TradingAccountCategoryId }, (Amounts, x) => new { Amounts, x.TradingAccountCategoryName })
+					.Where(x => x.Amounts.TradingAccountId == tradingAccountId)
 					.Select(x => new GetTradingAccountDetailDto.TradingAccountDetailAmount {
-						InvestmentProductId = x.InvestmentProductId,
-						InvestmentProductName = x.InvestmentProduct.Name,
-						InvestmentProductAmountId = x.InvestmentProductAmountId,
-						CurrencyUnitId = x.InvestmentProduct.InvestmentCurrencyUnitId,
-						Date = x.Date,
-						Amount = x.Amount,
-						Price = x.Price,
+						TradingAccountCategoryName = x.TradingAccountCategoryName,
+						InvestmentProductId = x.Amounts.InvestmentProductId,
+						InvestmentProductName = x.Amounts.InvestmentProduct.Name,
+						InvestmentProductAmountId = x.Amounts.InvestmentProductAmountId,
+						CurrencyUnitId = x.Amounts.InvestmentProduct.InvestmentCurrencyUnitId,
+						Date = x.Amounts.Date,
+						Amount = x.Amounts.Amount,
+						Price = x.Amounts.Price,
 					})
 					.OrderByDescending(x => x.Date)
 					.ToArrayAsync();
 
-			var amountListSummary = await this._db
+			var amountListSummaryWithCategoryListSource = await this._db
 					.InvestmentProducts
 					.Include(x => x.InvestmentProductRates)
 					.Include(x => x.InvestmentProductAmounts)
-					.Select(x => new GetTradingAccountDetailDto.TradingAccountDetailAmountSummary {
-						InvestmentProductId = x.InvestmentProductId,
-						Name = x.Name,
-						Key = x.Key,
-						Type = x.Type,
-						Category = x.Category,
-						CurrencyUnitId = x.InvestmentCurrencyUnitId,
-						Enable = x.Enable,
-						Amount = x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount),
-						AverageRate = x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount) == 0 ? 0 : x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount),
-						LatestRate = (double?)x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value ?? 0
-					})
-					.Where(x => x.Amount != 0)
+					.Select(x =>
+						new {
+							Summary = new GetTradingAccountDetailDto.TradingAccountDetailAmountSummary {
+								InvestmentProductId = x.InvestmentProductId,
+								Name = x.Name,
+								Key = x.Key,
+								Type = x.Type,
+								Category = x.Category,
+								CurrencyUnitId = x.InvestmentCurrencyUnitId,
+								Enable = x.Enable,
+								Amount = x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount),
+								AverageRate = x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount) == 0 ? 0 : x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Where(x => x.TradingAccountId == tradingAccountId).Sum(ipa => ipa.Amount),
+								LatestRate = (double?)x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value ?? 0,
+							},
+							CategoryListSource = x.InvestmentProductAmounts
+							.Where(x => x.TradingAccountId == tradingAccountId)
+							.ToArray()
+						})
+					.Where(x => x.Summary.Amount != 0)
 					.ToArrayAsync();
+			var categoryList = await this._db.TradingAccountCategories.Where(x => x.TradingAccountId == tradingAccountId).Select(x => new {
+				x.TradingAccountCategoryId,
+				x.TradingAccountCategoryName
+			}).ToArrayAsync();
+
+			foreach (var summary in amountListSummaryWithCategoryListSource) {
+				summary.Summary.TradingAccountCategoryDetailAmountList = summary.CategoryListSource
+					.GroupBy(x => x.TradingAccountCategoryId)
+					.Select(x => new GetTradingAccountDetailDto.TradingAccountDetailAmountSummary.TradingAccountCategoryDetailAmount {
+						TradingAccountCategoryName = categoryList.Single(c => c.TradingAccountCategoryId == x.Key).TradingAccountCategoryName,
+						Amount = x.Where(ipa => ipa.TradingAccountId == tradingAccountId && ipa.TradingAccountCategoryId == x.Key).Sum(ipa => ipa.Amount),
+						AverageRate = x.Where(
+							ipa => ipa.TradingAccountId == tradingAccountId && ipa.TradingAccountCategoryId == x.Key).Sum(ipa => ipa.Amount) == 0 ?
+							0 :
+							x.Where(ipa => ipa.TradingAccountId == tradingAccountId && ipa.TradingAccountCategoryId == x.Key).Sum(ipa => ipa.Amount * ipa.Price) / x.Where(ipa => ipa.TradingAccountId == tradingAccountId && ipa.TradingAccountCategoryId == x.Key).Sum(ipa => ipa.Amount)
+					}).ToArray();
+			}
+			var amountListSummary = amountListSummaryWithCategoryListSource.Select(x => x.Summary);
+
 			var account = await this._db.TradingAccounts.SingleAsync(x => x.TradingAccountId == tradingAccountId);
 
 			var rates =

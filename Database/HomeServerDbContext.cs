@@ -119,9 +119,17 @@ namespace DataBase {
 		} = null!;
 
 		/// <summary>
-		/// 投資通貨レート
+		/// 証券口座
 		/// </summary>
 		public DbSet<TradingAccount> TradingAccounts {
+			get;
+			set;
+		} = null!;
+
+		/// <summary>
+		/// 証券口座
+		/// </summary>
+		public DbSet<TradingAccountCategory> TradingAccountCategories {
 			get;
 			set;
 		} = null!;
@@ -174,6 +182,7 @@ namespace DataBase {
 			modelBuilder.Entity<InvestmentCurrencyRate>().HasKey(x => new { x.InvestmentCurrencyUnitId, x.Date });
 			modelBuilder.Entity<TradingAccount>().Property(x => x.TradingAccountId).ValueGeneratedOnAdd();
 			modelBuilder.Entity<TradingAccount>().HasKey(x => x.TradingAccountId);
+			modelBuilder.Entity<TradingAccountCategory>().HasKey(x => new { x.TradingAccountId, x.TradingAccountCategoryId});
 			modelBuilder.Entity<HealthCheckTarget>().HasKey(x => x.HealthCheckTargetId);
 			modelBuilder.Entity<HealthCheckTarget>().Property(x => x.HealthCheckTargetId).ValueGeneratedOnAdd();
 			modelBuilder.Entity<HealthCheckResult>().HasKey(x => x.HealthCheckResultId);
@@ -202,6 +211,11 @@ namespace DataBase {
 			modelBuilder.Entity<InvestmentProductRate>()
 				.HasOne(x => x.InvestmentProduct)
 				.WithMany(x => x.InvestmentProductRates)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<TradingAccountCategory>()
+				.HasOne(x => x.TradingAccount)
+				.WithMany(x => x.TradingAccountCategories)
 				.OnDelete(DeleteBehavior.Restrict);
 
 			modelBuilder.Entity<HealthCheckResult>()

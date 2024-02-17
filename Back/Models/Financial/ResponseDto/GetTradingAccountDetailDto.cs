@@ -115,9 +115,51 @@ namespace Back.Models.Financial.ResponseDto {
 				get;
 				set;
 			}
+
+			/// <summary>
+			/// 預り区分別取得量リスト
+			/// </summary>
+			public TradingAccountCategoryDetailAmount[] TradingAccountCategoryDetailAmountList {
+				get;
+				set;
+			} = null!;
+
+			public class TradingAccountCategoryDetailAmount {
+				/// <summary>
+				/// 預り区分名
+				/// </summary>
+				public string TradingAccountCategoryName {
+					get;
+					set;
+				} = null!;
+
+				/// <summary>
+				/// 所有数
+				/// </summary>
+				public double Amount {
+					get;
+					set;
+				}
+
+				/// <summary>
+				/// 平均取得価格
+				/// </summary>
+				public double AverageRate {
+					get;
+					set;
+				}
+			}
 		}
 
 		public class TradingAccountDetailAmount {
+			/// <summary>
+			/// 預り区分名
+			/// </summary>
+			public string TradingAccountCategoryName {
+				get;
+				set;
+			} = null!;
+
 			/// <summary>
 			/// 投資商品ID
 			/// </summary>

@@ -57,5 +57,13 @@ namespace Back.Models.Financial.ResponseDto {
 			get;
 			set;
 		} = null!;
+
+		/// <summary>
+		/// 預り区分名
+		/// </summary>
+		public string TradingAccountCategoryName {
+			get;
+			set;
+		} = null!;
 	}
 }

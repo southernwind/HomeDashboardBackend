@@ -200,7 +200,7 @@ namespace Back.Controllers {
 		}
 
 		/// <summary>
-		/// 投資
+		/// 投資口座情報取得
 		/// </summary>
 		/// <param name="from">開始日</param>
 		/// <param name="to">終了日</param>

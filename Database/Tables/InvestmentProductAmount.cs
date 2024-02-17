@@ -30,6 +30,14 @@ namespace Database.Tables {
 		}
 
 		/// <summary>
+		/// 口座ID
+		/// </summary>
+		public int TradingAccountCategoryId {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// 取得日
 		/// </summary>
 		public DateTime Date {
