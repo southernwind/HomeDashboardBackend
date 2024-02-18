@@ -215,6 +215,14 @@ namespace Back.Models.Financial.ResponseDto {
 				get;
 				set;
 			}
+
+			/// <summary>
+			/// 最新価格
+			/// </summary>
+			public double LatestRate {
+				get;
+				set;
+			}
 		}
 	}
 }

@@ -264,25 +264,28 @@ namespace Back.Models.Financial {
 		/// <param name="investmentProductId"></param>
 		/// <returns></returns>
 		public async Task<GetInvestmentProductAmountDto[]> GetInvestmentProductAmountList(int investmentProductId) {
-			return await
+			var latestRate = (await this._db.InvestmentProductRates.Where(x => x.InvestmentProductId == investmentProductId).ToArrayAsync()).MaxBy(x => x.Date)!.Value;
+			return (await
 				this
 					._db
 					.InvestmentProductAmounts
 					.Include(x => x.TradingAccount)
-					.Join(this._db.TradingAccountCategories, x => new { x.TradingAccountId,x.TradingAccountCategoryId}, x=> new { x.TradingAccountId, x.TradingAccountCategoryId },(Amounts,x) => new { Amounts, x.TradingAccountCategoryName })
+					.Join(this._db.TradingAccountCategories, x => new { x.TradingAccountId, x.TradingAccountCategoryId }, x => new { x.TradingAccountId, x.TradingAccountCategoryId }, (Amounts, x) => new { Amounts, x.TradingAccountCategoryName })
 					.Where(x => x.Amounts.InvestmentProductId == investmentProductId)
+					.OrderByDescending(x => x.Amounts.Date)
+					.ToArrayAsync())
 					.Select(x => new GetInvestmentProductAmountDto {
 						InvestmentProductId = x.Amounts.InvestmentProductId,
 						InvestmentProductAmountId = x.Amounts.InvestmentProductAmountId,
 						Date = x.Amounts.Date,
 						Amount = x.Amounts.Amount,
 						Price = x.Amounts.Price,
+						LatestRate = latestRate,
 						TradingAccountName = x.Amounts.TradingAccount.Name,
 						TradingAccountLogo = x.Amounts.TradingAccount.Logo,
 						TradingAccountCategoryName = x.TradingAccountCategoryName
 					})
-					.OrderByDescending(x => x.Date)
-					.ToArrayAsync();
+					.ToArray();
 		}
 
 
@@ -295,6 +298,7 @@ namespace Back.Models.Financial {
 			var amountList = await this._db
 					.InvestmentProductAmounts
 					.Include(x => x.InvestmentProduct)
+					.ThenInclude(x => x.InvestmentProductRates)
 					.Join(this._db.TradingAccountCategories, x => new { x.TradingAccountId, x.TradingAccountCategoryId }, x => new { x.TradingAccountId, x.TradingAccountCategoryId }, (Amounts, x) => new { Amounts, x.TradingAccountCategoryName })
 					.Where(x => x.Amounts.TradingAccountId == tradingAccountId)
 					.Select(x => new GetTradingAccountDetailDto.TradingAccountDetailAmount {
@@ -306,6 +310,7 @@ namespace Back.Models.Financial {
 						Date = x.Amounts.Date,
 						Amount = x.Amounts.Amount,
 						Price = x.Amounts.Price,
+						LatestRate = x.Amounts.InvestmentProduct.InvestmentProductRates.OrderByDescending(x => x.Date).First().Value
 					})
 					.OrderByDescending(x => x.Date)
 					.ToArrayAsync();

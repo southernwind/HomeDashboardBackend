@@ -43,6 +43,14 @@ namespace Back.Models.Financial.ResponseDto {
 		}
 
 		/// <summary>
+		/// 最新価格
+		/// </summary>
+		public double LatestRate {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// 証券口座名
 		/// </summary>
 		public string TradingAccountName {
