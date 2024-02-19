@@ -434,11 +434,17 @@ namespace Back.Models.Financial {
 				this
 					._db
 					.TradingAccounts
+					.Include(x => x.TradingAccountCategories)
 					.OrderBy(x => x.TradingAccountId)
 					.Select(x => new GetTradingAccountListDto {
 						TradingAccountId = x.TradingAccountId,
 						Name = x.Name,
-						Logo = x.Logo
+						Logo = x.Logo,
+						TradingAccountCategories = x.TradingAccountCategories.Select(x => new GetTradingAccountListDto.TradingAccountCategory() {
+							TradingAccountCategoryId = x.TradingAccountCategoryId,
+							TradingAccountCategoryName = x.TradingAccountCategoryName,
+							DefaultFlag = x.DefaultFlag
+						}).ToArray()
 					})
 					.ToArrayAsync();
 		}
