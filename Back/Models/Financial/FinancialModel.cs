@@ -259,17 +259,46 @@ namespace Back.Models.Financial {
 		}
 
 		/// <summary>
-		/// 投資履歴取得
+		/// 投資商品詳細取得
 		/// </summary>
 		/// <param name="investmentProductId"></param>
 		/// <returns></returns>
-		public async Task<GetInvestmentProductAmountDto[]> GetInvestmentProductAmountList(int investmentProductId) {
-			var nullableLatestRate = (await this._db.InvestmentProductRates.Where(x => x.InvestmentProductId == investmentProductId).ToArrayAsync()).MaxBy(x => x.Date)?.Value;
-			if (nullableLatestRate == null) {
-				return [];
-			}
-			var latestRate = (double)nullableLatestRate;
-			return (await
+		public async Task<GetInvestmentProductDetailDto> GetInvestmentProductDetailAsync(int investmentProductId) {
+			var rates =
+				await this._db
+					.InvestmentCurrencyUnits
+					.Include(x => x.InvestmentCurrencyRates)
+					.Select(x => new {
+						id = x.Id,
+						rate = x.InvestmentCurrencyRates.OrderByDescending(r => r.Date).First().Value
+					})
+					.ToArrayAsync();
+			 var result = await
+				this._db
+					.InvestmentProducts
+					.Include(x => x.InvestmentProductRates)
+					.Include(x => x.InvestmentProductAmounts)
+					.Where(x => x.InvestmentProductId == investmentProductId)
+					.Select(x => new GetInvestmentProductDetailDto {
+						InvestmentProductId = x.InvestmentProductId,
+						Name = x.Name,
+						Key = x.Key,
+						Type = x.Type,
+						Category = x.Category,
+						CurrencyUnitId = x.InvestmentCurrencyUnitId,
+						Enable = x.Enable,
+						Amount = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
+						AverageRate = x.InvestmentProductAmounts.Sum(ipa => ipa.Amount) == 0 ? 0 : x.InvestmentProductAmounts.Sum(ipa => ipa.Amount * ipa.Price) / x.InvestmentProductAmounts.Sum(ipa => ipa.Amount),
+						LatestRate = (double?)x.InvestmentProductRates.OrderByDescending(ipr => ipr.Date).First().Value ?? 0
+					})
+					.FirstAsync();
+
+			var latestRate = (await this._db.InvestmentProductRates.Where(x => x.InvestmentProductId == investmentProductId).ToArrayAsync()).MaxBy(x => x.Date)?.Value ?? 0;
+			result.InvestmentProductRateList = await this._db.InvestmentProductRates.Where(x => x.InvestmentProductId == investmentProductId).Select(x => new GetInvestmentProductDetailDto.InvestmentProductRate {
+				Date = x.Date,
+				Rate = x.Value
+			}).OrderBy(x => x.Date).ToArrayAsync();
+			result.InvestmentProductAmountList = (await
 				this
 					._db
 					.InvestmentProductAmounts
@@ -278,7 +307,7 @@ namespace Back.Models.Financial {
 					.Where(x => x.Amounts.InvestmentProductId == investmentProductId)
 					.OrderByDescending(x => x.Amounts.Date)
 					.ToArrayAsync())
-					.Select(x => new GetInvestmentProductAmountDto {
+					.Select(x => new GetInvestmentProductDetailDto.InvestmentProductAmount {
 						InvestmentProductId = x.Amounts.InvestmentProductId,
 						InvestmentProductAmountId = x.Amounts.InvestmentProductAmountId,
 						Date = x.Amounts.Date,
@@ -290,6 +319,7 @@ namespace Back.Models.Financial {
 						TradingAccountCategoryName = x.TradingAccountCategoryName
 					})
 					.ToArray();
+			return result;
 		}
 
 
