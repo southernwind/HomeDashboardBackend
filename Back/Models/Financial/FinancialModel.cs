@@ -264,7 +264,11 @@ namespace Back.Models.Financial {
 		/// <param name="investmentProductId"></param>
 		/// <returns></returns>
 		public async Task<GetInvestmentProductAmountDto[]> GetInvestmentProductAmountList(int investmentProductId) {
-			var latestRate = (await this._db.InvestmentProductRates.Where(x => x.InvestmentProductId == investmentProductId).ToArrayAsync()).MaxBy(x => x.Date)!.Value;
+			var nullableLatestRate = (await this._db.InvestmentProductRates.Where(x => x.InvestmentProductId == investmentProductId).ToArrayAsync()).MaxBy(x => x.Date)?.Value;
+			if (nullableLatestRate == null) {
+				return [];
+			}
+			var latestRate = (double)nullableLatestRate;
 			return (await
 				this
 					._db
