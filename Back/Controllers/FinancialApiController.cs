@@ -18,39 +18,6 @@ namespace Back.Controllers {
 		}
 
 		/// <summary>
-		/// 財務データベースの更新リクエスト(FromTo指定)API
-		/// </summary>
-		/// <param name="term">更新期間</param>
-		/// <returns>更新キー</returns>
-		[HttpPost]
-		[ActionName("post-update-by-term-request")]
-		public JsonResult PostUpdateByTermRequest([FromBody] Term term) {
-			var fromDate = term.GetFrom();
-			var toDate = term.GetTo();
-			return new JsonResult(new {
-				key = this._financial.Update(fromDate, toDate)
-			});
-		}
-
-		/// <summary>
-		/// 財務データベースの更新リクエスト
-		/// </summary>
-		/// <param name="span">更新期間</param>API
-		/// <returns>更新キー</returns>
-		[HttpPost]
-		[ActionName("post-update-by-span-request")]
-		public JsonResult PostUpdateBySpanRequest([FromBody] Span span) {
-			if (!(span.Days is { } days)) {
-				throw new ArgumentException();
-			}
-			var to = DateTime.Now.Date;
-			var from = to.AddDays(-days);
-			return new JsonResult(new {
-				key = this._financial.Update(from, to)
-			});
-		}
-
-		/// <summary>
 		/// 処理状況取得API
 		/// </summary>
 		/// <param name="key">更新キー</param>

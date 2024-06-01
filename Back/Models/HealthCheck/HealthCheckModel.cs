@@ -1,21 +1,13 @@
-
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Back.Models.Common;
-using Back.Models.Financial.RequestDto;
-using Back.Models.Financial.ResponseDto;
 using Back.Models.HealthCheck.ResponseDto;
-using Back.Utils;
-
-using Database.Tables;
 
 using DataBase;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Back.Models.HealthCheck; 
+namespace Back.Models.HealthCheck;
 /// <summary>
 /// ヘルスチェックデータベースの操作
 /// </summary>

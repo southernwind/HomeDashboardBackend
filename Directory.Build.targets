@@ -5,7 +5,8 @@
     <PackageReference Update="HtmlAgilityPack" Version="1.11.46"/>
     <PackageReference Update="HtmlAgilityPack.CssSelectors.NetCore" Version="1.2.1"/>
     <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
-    <PackageReference Update="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0-silver.1"/>
+    <PackageReference Update="Microsoft.EntityFrameworkCore" Version="8.0.6" />
+    <PackageReference Update="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2"/>
     <PackageReference Update="ReactiveProperty" Version="8.2.0"/>
     <PackageReference Update="System.IO.Ports" Version="7.0.0"/>
     <PackageReference Update="System.Reactive" Version="5.0.0"/>

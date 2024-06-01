@@ -10,7 +10,6 @@ using Back.Models.HealthCheck;
 using Back.Models.Kitchen;
 using Back.Models.Network;
 using Back.Models.Palmie;
-using Back.Models.Settings;
 using Back.States;
 using Back.States.Monitors.Aquarium;
 
@@ -78,7 +77,6 @@ namespace Back {
 			services.AddTransient<AquariumMonitor>();
 			services.AddTransient<FinancialModel>();
 			services.AddTransient<ElectricPowerModel>();
-			services.AddTransient<SettingsModel>();
 			services.AddTransient<NetworkModel>();
 			services.AddTransient<KitchenModel>();
 			services.AddTransient<AquariumModel>();

@@ -1,6 +1,7 @@
 using Database.Tables;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DataBase {
 	public class HomeServerDbContext : DbContext {
@@ -8,7 +9,7 @@ namespace DataBase {
 		/// 取引履歴
 		/// </summary>
 
-		public DbSet<LockableMfTransaction> MfTransactions {
+		public DbSet<MfTransaction> MfTransactions {
 			get;
 			set;
 		} = null!;
@@ -16,7 +17,7 @@ namespace DataBase {
 		/// <summary>
 		/// 資産推移
 		/// </summary>
-		public DbSet<LockableMfAsset> MfAssets {
+		public DbSet<MfAsset> MfAssets {
 			get;
 			set;
 		} = null!;
@@ -162,8 +163,8 @@ namespace DataBase {
 		/// </summary>
 		/// <param name="modelBuilder">ModelBuilder</param>
 		protected override void OnModelCreating(ModelBuilder modelBuilder) {
-			modelBuilder.Entity<LockableMfTransaction>().HasKey(x => x.TransactionId);
-			modelBuilder.Entity<LockableMfAsset>().HasKey(x => new { x.Date, x.Institution, x.Category });
+			modelBuilder.Entity<MfTransaction>().HasKey(x => x.TransactionId);
+			modelBuilder.Entity<MfAsset>().HasKey(x => new { x.Date, x.Institution, x.Category });
 			modelBuilder.Entity<UserSetting>().HasKey(x => x.Id);
 			modelBuilder.Entity<WakeOnLanTarget>().HasKey(x => x.MacAddress);
 			modelBuilder.Entity<MacAddressVendor>().HasKey(x => x.Assignment);

@@ -19,7 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Database\Database.csproj" />
-    <ProjectReference Include="..\Library\MoneyForwardViewer\MoneyForwardViewer.Scraper\MoneyForwardViewer.Scraper.csproj" />
   </ItemGroup>
 
 </Project>
