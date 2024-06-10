@@ -135,6 +135,11 @@ namespace DataBase {
 			set;
 		} = null!;
 
+		public DbSet<DailyAssetProgress> DailyAssetProgresses {
+			get;
+			set;
+		} = null!;
+
 		/// <summary>
 		/// ヘルスチェック対象
 		/// </summary>
@@ -184,6 +189,7 @@ namespace DataBase {
 			modelBuilder.Entity<TradingAccount>().Property(x => x.TradingAccountId).ValueGeneratedOnAdd();
 			modelBuilder.Entity<TradingAccount>().HasKey(x => x.TradingAccountId);
 			modelBuilder.Entity<TradingAccountCategory>().HasKey(x => new { x.TradingAccountId, x.TradingAccountCategoryId});
+			modelBuilder.Entity<DailyAssetProgress>().HasKey(x => new { x.Date, x.InvestmentProductId });
 			modelBuilder.Entity<HealthCheckTarget>().HasKey(x => x.HealthCheckTargetId);
 			modelBuilder.Entity<HealthCheckTarget>().Property(x => x.HealthCheckTargetId).ValueGeneratedOnAdd();
 			modelBuilder.Entity<HealthCheckResult>().HasKey(x => x.HealthCheckResultId);
@@ -217,6 +223,11 @@ namespace DataBase {
 			modelBuilder.Entity<TradingAccountCategory>()
 				.HasOne(x => x.TradingAccount)
 				.WithMany(x => x.TradingAccountCategories)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<DailyAssetProgress>()
+				.HasOne(x => x.InvestmentProduct)
+				.WithMany(x => x.DailyAssetProgresses)
 				.OnDelete(DeleteBehavior.Restrict);
 
 			modelBuilder.Entity<HealthCheckResult>()

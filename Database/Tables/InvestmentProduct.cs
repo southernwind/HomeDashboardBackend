@@ -6,6 +6,7 @@ namespace Database.Tables {
 		private InvestmentCurrencyUnit? _investmentCurrencyUnit;
 		private ICollection<InvestmentProductAmount>? _investmentProductAmounts;
 		private ICollection<InvestmentProductRate>? _investmentProductRates;
+		private ICollection<DailyAssetProgress>? _dailyAssetProgresses;
 
 		/// <summary>
 		/// 投資商品ID
@@ -90,6 +91,15 @@ namespace Database.Tables {
 			}
 			set {
 				this._investmentProductRates = value;
+			}
+		}
+
+		public virtual ICollection<DailyAssetProgress> DailyAssetProgresses {
+			get {
+				return this._dailyAssetProgresses ?? throw new InvalidOperationException();
+			}
+			set {
+				this._dailyAssetProgresses = value;
 			}
 		}
 	}
