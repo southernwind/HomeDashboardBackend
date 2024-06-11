@@ -79,9 +79,8 @@ namespace Back.Models.Financial {
 				.SelectMany(x =>
 					x.DailyRates.Select(dr => new { DailyRate = dr, x.CurrencyUnitId })
 				).Select(x => {
-					var currencyRate = x.CurrencyUnitId != 1 ? ia.CurrencyRates.Single(c => c.Id == x.CurrencyUnitId && c.Date == x.DailyRate.Date).LatestRate : 1;
 					return new {
-						Amount = (int)(x.DailyRate.Rate * x.DailyRate.Amount * currencyRate),
+						Amount = (int)(x.DailyRate.Rate * x.DailyRate.Amount * x.DailyRate.CurrencyRate),
 						x.DailyRate.Date,
 					};
 				})
@@ -418,69 +417,25 @@ namespace Back.Models.Financial {
 		/// <param name="to">取得対象終了日</param>
 		/// <returns>投資資産推移データ</returns>
 		public async Task<GetInvestmentAssetResponseDto> GetInvestmentAssetsAsync(DateTime from, DateTime to) {
-			var products = await this._db
-				.InvestmentProducts
-				.Include(x => x.InvestmentProductAmounts)
-				.Include(x => x.InvestmentProductRates)
-				.ToArrayAsync();
-			var currencyUnits = await
-				this._db
-					.InvestmentCurrencyRates
-					.Where(x => x.InvestmentCurrencyUnitId != 1)
-					.OrderByDescending(x => x.Date)
-					.ToArrayAsync();
-			var dates =
-				Enumerable
-					.Range(0, (int)(to - from).TotalDays + 1)
-					.Select(x => from.AddDays(x))
-					.ToArray();
 			var result = new GetInvestmentAssetResponseDto {
-				InvestmentAssetProducts = products.Select(product => {
-					return new InvestmentAssetProduct {
-						InvestmentProductId = product.InvestmentProductId,
-						Name = product.Name,
-						Category = product.Category,
-						CurrencyUnitId = product.InvestmentCurrencyUnitId,
-						DailyRates = dates.Select(date => {
-							var amount =
-								product.InvestmentProductAmounts
-									.Where(ipa => ipa.Date <= date)
-									.Sum(ipa => ipa.Amount);
-							if (amount == 0) {
-								return new DailyRate { Date = date };
-							}
-							var averageRate =
-								product.InvestmentProductAmounts
-									.Where(ipa => ipa.Date <= date)
-									.Sum(ipa => ipa.Amount * ipa.Price);
-							return new DailyRate {
-								Date = date,
-								Rate = product.InvestmentProductRates.Where(r => r.Date <= date).MaxByWithTies(r => r.Date).First()
-									.Value,
-								Amount = amount,
-								AverageRate = averageRate / amount
-							};
-						}).ToArray()
-					};
-				}).Where(x => x != null!).ToArray(),
-				CurrencyRates =
-					dates
-						.Join(currencyUnits.Select(x => x.InvestmentCurrencyUnitId).Distinct(), _ => true, _ => true, (date, currencyId) => (date, currencyId))
-						.Select(g => {
-							var (date, currencyId) = g;
-							var currency = currencyUnits
-								.Where(x => x.InvestmentCurrencyUnitId == currencyId && x.Date <= date)
-								.MaxBy(x => x.Date) ?? new InvestmentCurrencyRate() { Date = date, InvestmentCurrencyUnitId = currencyId, Value = 1};
-							return new CurrencyUnit {
-								Id = currency?.InvestmentCurrencyUnitId ?? -1,
-								Date = date,
-								LatestRate = currency?.Value ?? -1
-							};
-						})
-						.Where( x=> x.Id != -1)
-						.ToArray()
+				InvestmentAssetProducts = await this._db
+					.InvestmentProducts
+					.Include(x => x.DailyAssetProgresses.Where(x => x.Date >= from && x.Date <= to))
+					.Select(x =>
+						new InvestmentAssetProduct {
+							InvestmentProductId = x.InvestmentProductId,
+							Name = x.Name,
+							Category = x.Category,
+							CurrencyUnitId = x.InvestmentCurrencyUnitId,
+							DailyRates = x.DailyAssetProgresses.Select(y => new DailyRate {
+								Date = y.Date,
+								Rate = y.Rate,
+								Amount = y.Amount,
+								AverageRate = y.AverageRate,
+								CurrencyRate = y.CurrencyRate
+							}).ToArray()
+						}).ToArrayAsync()
 			};
-
 			return result;
 		}
 	}

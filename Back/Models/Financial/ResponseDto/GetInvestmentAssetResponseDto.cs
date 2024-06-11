@@ -7,31 +7,6 @@ namespace Back.Models.Financial.ResponseDto {
 			get;
 			set;
 		} = null!;
-
-		public CurrencyUnit[] CurrencyRates {
-			get;
-			set;
-		} = null!;
-	}
-
-	public class CurrencyUnit {
-		public DateTime Date {
-			get;
-			set;
-		}
-
-		public int Id {
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// 最新レート (1通貨単位あたりの円)
-		/// </summary>
-		public double LatestRate {
-			get;
-			set;
-		}
 	}
 
 	public class InvestmentAssetProduct {
@@ -101,6 +76,14 @@ namespace Back.Models.Financial.ResponseDto {
 		/// 当日平均取得価格
 		/// </summary>
 		public double AverageRate {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// 最新レート (1通貨単位あたりの円)
+		/// </summary>
+		public double CurrencyRate {
 			get;
 			set;
 		}
