@@ -10,11 +10,8 @@ namespace Back.Controllers;
 [ApiController]
 [Produces(MediaTypeNames.Application.Json)]
 [Route("api/health-check-api/[action]")]
-public class HealthCheckController {
-	private readonly HealthCheckModel _healthCheckModel;
-	public HealthCheckController(HealthCheckModel healthCheckModel) {
-		this._healthCheckModel = healthCheckModel;
-	}
+public class HealthCheckController(HealthCheckModel healthCheckModel) {
+	private readonly HealthCheckModel _healthCheckModel = healthCheckModel;
 
 	[HttpGet]
 	[ActionName("get-latest-result")]

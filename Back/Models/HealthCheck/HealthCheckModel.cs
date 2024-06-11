@@ -11,19 +11,15 @@ namespace Back.Models.HealthCheck;
 /// <summary>
 /// ヘルスチェックデータベースの操作
 /// </summary>
-public class HealthCheckModel {
+/// <remarks>
+/// コンストラクタ
+/// </remarks>
+/// <param name="db">データベース</param>
+public class HealthCheckModel(HomeServerDbContext db) {
 	/// <summary>
 	/// データベース
 	/// </summary>
-	private readonly HomeServerDbContext _db;
-
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	/// <param name="db">データベース</param>
-	public HealthCheckModel(HomeServerDbContext db) {
-		this._db = db;
-	}
+	private readonly HomeServerDbContext _db = db;
 
 	/// <summary>
 	/// 最新状況取得

@@ -4,7 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DataBase {
-	public class HomeServerDbContext : DbContext {
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	/// <param name="options">DbContextOptions</param>
+	public class HomeServerDbContext(DbContextOptions options) : DbContext(options) {
 		/// <summary>
 		/// 取引履歴
 		/// </summary>
@@ -135,6 +139,9 @@ namespace DataBase {
 			set;
 		} = null!;
 
+		/// <summary>
+		/// デイリー資産推移
+		/// </summary>
 		public DbSet<DailyAssetProgress> DailyAssetProgresses {
 			get;
 			set;
@@ -155,13 +162,6 @@ namespace DataBase {
 			get;
 			set;
 		} = null!;
-
-		/// <summary>
-		/// コンストラクタ
-		/// </summary>
-		/// <param name="options">DbContextOptions</param>
-		public HomeServerDbContext(DbContextOptions options) : base(options) {
-		}
 
 		/// <summary>
 		/// DBモデル設定

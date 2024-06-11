@@ -1,29 +1,28 @@
 using System;
 
-namespace Database.Tables {
-	public class MfAsset {
-		public DateTime Date {
-			get;
-			set;
-		}
+namespace Database.Tables; 
+public class MfAsset {
+	public DateTime Date {
+		get;
+		set;
+	}
 
-		public string Institution {
-			get;
-			set;
-		} = null!;
+	public string Institution {
+		get;
+		set;
+	} = null!;
 
-		public string Category {
-			get;
-			set;
-		} = null!;
+	public string Category {
+		get;
+		set;
+	} = null!;
 
-		public int Amount {
-			get;
-			set;
-		}
-		public bool IsLocked {
-			get;
-			set;
-		}
+	public int Amount {
+		get;
+		set;
+	}
+	public bool IsLocked {
+		get;
+		set;
 	}
 }
