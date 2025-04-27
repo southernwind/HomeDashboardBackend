@@ -59,7 +59,7 @@ public class Startup {
 		services.AddSignalR();
 		services.AddDbContext<HomeServerDbContext>(optionsBuilder => {
 			var connectionString = this.Configuration.GetConnectionString("Database");
-			optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+			optionsBuilder.UseNpgsql(connectionString);
 		});
 		services.AddLogging(builder => {
 			builder.AddConfiguration(this.Configuration.GetSection("Logging"))

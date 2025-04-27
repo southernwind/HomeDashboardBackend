@@ -2,7 +2,7 @@ using System;
 
 namespace Database.Tables; 
 public class MfAsset {
-	public DateTime Date {
+	public DateOnly Date {
 		get;
 		set;
 	}

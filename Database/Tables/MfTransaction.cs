@@ -21,7 +21,7 @@ public class MfTransaction {
 	/// <summary>
 	/// 日付
 	/// </summary>
-	public DateTime Date {
+	public DateOnly Date {
 		get;
 		set;
 	}

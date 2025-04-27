@@ -40,7 +40,7 @@ public class InvestmentProductAmount {
 	/// <summary>
 	/// 取得日
 	/// </summary>
-	public DateTime Date {
+	public DateOnly Date {
 		get;
 		set;
 	}

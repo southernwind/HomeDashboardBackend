@@ -51,7 +51,7 @@ public class InvestmentAssetProduct {
 }
 
 public class DailyRate {
-	public DateTime Date {
+	public DateOnly Date {
 		get;
 		set;
 	}

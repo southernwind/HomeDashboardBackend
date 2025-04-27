@@ -8,7 +8,7 @@ public class InvestmentCurrencyRate {
 		get;
 		set;
 	}
-	public DateTime Date {
+	public DateOnly Date {
 		get;
 		set;
 	}

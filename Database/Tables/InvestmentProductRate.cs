@@ -12,7 +12,7 @@ public class InvestmentProductRate {
 		set;
 	}
 
-	public DateTime Date {
+	public DateOnly Date {
 		get;
 		set;
 	}

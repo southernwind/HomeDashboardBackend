@@ -23,8 +23,8 @@ public class FinancialApiController(FinancialModel financial) : ControllerBase {
 	[HttpGet]
 	[ActionName("get-assets")]
 	public async Task<JsonResult> GetAssetsAsync(string from, string to) {
-		var fromDate = DateTime.Parse(from);
-		var toDate = DateTime.Parse(to);
+		var fromDate = DateOnly.Parse(from);
+		var toDate = DateOnly.Parse(to);
 		return new JsonResult(await this._financial.GetAssetsAsync(fromDate, toDate));
 	}
 
@@ -37,8 +37,8 @@ public class FinancialApiController(FinancialModel financial) : ControllerBase {
 	[HttpGet]
 	[ActionName("get-latest-asset")]
 	public async Task<JsonResult> GetLatestAssetAsync(string from, string to) {
-		var fromDate = DateTime.Parse(from);
-		var toDate = DateTime.Parse(to);
+		var fromDate = DateOnly.Parse(from);
+		var toDate = DateOnly.Parse(to);
 		return new JsonResult(await this._financial.GetLatestAssetAsync(fromDate, toDate));
 	}
 
@@ -51,8 +51,8 @@ public class FinancialApiController(FinancialModel financial) : ControllerBase {
 	[HttpGet]
 	[ActionName("get-transactions")]
 	public async Task<JsonResult> GetTransactionsAsync(string from, string to) {
-		var fromDate = DateTime.Parse(from);
-		var toDate = DateTime.Parse(to);
+		var fromDate = DateOnly.Parse(from);
+		var toDate = DateOnly.Parse(to);
 		return new JsonResult(await this._financial.GetTransactionsAsync(fromDate, toDate));
 	}
 
@@ -133,8 +133,8 @@ public class FinancialApiController(FinancialModel financial) : ControllerBase {
 	[HttpGet]
 	[ActionName("get-investment-assets")]
 	public async Task<JsonResult> GetInvestmentAssetsAsync(string from, string to) {
-		var fromDate = DateTime.Parse(from);
-		var toDate = DateTime.Parse(to);
+		var fromDate = DateOnly.Parse(from);
+		var toDate = DateOnly.Parse(to);
 		return new JsonResult(await this._financial.GetInvestmentAssetsAsync(fromDate, toDate));
 	}
 

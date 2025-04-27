@@ -31,7 +31,7 @@ public class GetInvestmentProductDetailDto: GetInvestmentProductListResponseDto 
 		/// <summary>
 		/// 取得日
 		/// </summary>
-		public DateTime Date {
+		public DateOnly Date {
 			get;
 			set;
 		}
@@ -88,7 +88,7 @@ public class GetInvestmentProductDetailDto: GetInvestmentProductListResponseDto 
 		/// <summary>
 		/// 日付
 		/// </summary>
-		public DateTime Date {
+		public DateOnly Date {
 			get;
 			set;
 		}

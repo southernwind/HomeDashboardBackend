@@ -7,7 +7,7 @@ public class DailyAssetProgress {
 	/// <summary>
 	/// 日
 	/// </summary>
-	public DateTime Date {
+	public DateOnly Date {
 
 		get;
 		set;

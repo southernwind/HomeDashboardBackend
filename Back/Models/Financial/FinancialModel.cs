@@ -39,7 +39,7 @@ public class FinancialModel {
 	/// <param name="from">取得対象開始日</param>
 	/// <param name="to">取得対象終了日</param>
 	/// <returns>資産推移データ</returns>
-	public async Task<MfAsset[]> GetAssetsAsync(DateTime from, DateTime to) {
+	public async Task<MfAsset[]> GetAssetsAsync(DateOnly from, DateOnly to) {
 		var assets = await this._db.MfAssets.Where(x => from <= x.Date && to >= x.Date).ToArrayAsync();
 		var ia = await this.GetInvestmentAssetsAsync(from, to);
 		var investmentAssets = ia
@@ -70,7 +70,7 @@ public class FinancialModel {
 	/// <param name="from">取得対象開始日</param>
 	/// <param name="to">取得対象終了日</param>
 	/// <returns>資産推移データ</returns>
-	public async Task<MfAsset[]> GetLatestAssetAsync(DateTime from, DateTime to) {
+	public async Task<MfAsset[]> GetLatestAssetAsync(DateOnly from, DateOnly to) {
 		var assets = await this.GetAssetsAsync(from, to);
 		var max = assets.Max(x => x.Date);
 		return assets.Where(x => x.Date == max).ToArray();
@@ -82,7 +82,7 @@ public class FinancialModel {
 	/// <param name="from">取得対象開始日</param>
 	/// <param name="to">取得対象終了日</param>
 	/// <returns>取引履歴データ</returns>
-	public async Task<MfTransaction[]> GetTransactionsAsync(DateTime from, DateTime to) {
+	public async Task<MfTransaction[]> GetTransactionsAsync(DateOnly from, DateOnly to) {
 		return await
 			this._db
 				.MfTransactions
@@ -113,7 +113,7 @@ public class FinancialModel {
 	/// </summary>
 	/// <param name="dto">DTO</param>
 	public async Task RegisterInvestmentProductAmount(RegisterInvestmentProductRequestAmountDto dto) {
-		var date = DateTime.Parse(dto.Date);
+		var date = DateOnly.Parse(dto.Date);
 		await using var transaction = await this._db.Database.BeginTransactionAsync();
 		var record = await this._db.InvestmentProductAmounts
 			.FirstOrDefaultAsync(x =>
@@ -383,7 +383,7 @@ public class FinancialModel {
 	/// <param name="from">取得対象開始日</param>
 	/// <param name="to">取得対象終了日</param>
 	/// <returns>投資資産推移データ</returns>
-	public async Task<GetInvestmentAssetResponseDto> GetInvestmentAssetsAsync(DateTime from, DateTime to) {
+	public async Task<GetInvestmentAssetResponseDto> GetInvestmentAssetsAsync(DateOnly from, DateOnly to) {
 		var result = new GetInvestmentAssetResponseDto {
 			InvestmentAssetProducts = await this._db
 				.InvestmentProducts
