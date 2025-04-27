@@ -30,7 +30,7 @@ public class KitchenModel(HomeServerDbContext db, IHttpClientFactory clientFacto
 
 			if (string.IsNullOrWhiteSpace(recipe.ImageUrl)) {
 				recipe.ImageUrl = htmlDoc.DocumentNode.QuerySelector("head meta[property=og:image]")
-					?.GetAttributeValue("content", null);
+					?.GetAttributeValue("content", "");
 			}
 		}
 
