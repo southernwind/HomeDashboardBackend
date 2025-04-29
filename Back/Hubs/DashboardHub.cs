@@ -25,7 +25,7 @@ public class DashboardHub(HomeServerDbContext dbContext, ILogger<DashboardHub> l
 		using var transaction = this._dbContext.Database.BeginTransaction();
 		try {
 			this._dbContext.ElectricPowers.Add(
-				new Database.Tables.ElectricPower { TimeStamp = dateTime, ElectricPowerValue = consumption });
+				new Database.Tables.ElectricPower { TimeStamp = dateTime.ToUniversalTime(), ElectricPowerValue = consumption });
 			this._dbContext.SaveChanges();
 			transaction.Commit();
 		} catch (Exception e) {
